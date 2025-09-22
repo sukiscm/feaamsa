@@ -1,8 +1,9 @@
-// app/api/users/route.ts - ejemplo de proxy server-side
-import { auth } from "@/auth";
+// app/api/users/route.ts
+import { authOptions } from "@/auth";
+import { getServerSession } from "next-auth";
 
 export async function GET() {
-  const session = await auth(); // v5 server helper
+  const session = await getServerSession(authOptions);
   const access = (session as any)?.access_token;
   if (!access) return new Response("Unauthorized", { status: 401 });
 
@@ -10,5 +11,6 @@ export async function GET() {
     headers: { Authorization: `Bearer ${access}` },
     cache: "no-store",
   });
+
   return new Response(await r.text(), { status: r.status });
 }

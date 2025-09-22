@@ -16,12 +16,9 @@ const RecentTransactions = () => {
   return (
     <DashboardCard title="Recent Transactions">
       <>
-        <Timeline
-          className="theme-timeline"
-          nonce={undefined}
-          onReset={undefined}
-          onResetCapture={undefined}
-          sx={{
+      <Timeline
+  className="theme-timeline"
+  sx={{
             p: 0,
             mb: '-40px',
             '& .MuiTimelineConnector-root': {
