@@ -3,9 +3,10 @@ import {
   IconCopy,
   IconLayoutDashboard,
   IconLogin,
-  IconMoodHappy,
+  IconFileBarcode,
   IconTypography,
   IconUserPlus,
+  IconBuildingWarehouse,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -24,13 +25,13 @@ const Menuitems = [
   },
   {
     navlabel: true,
-    subheader: "Tab1",
+    subheader: "Tickets",
   },
   {
     id: uniqueId(),
-    title: "SubTab1",
-    icon: IconTypography,
-    href: "/utilities/typography",
+    title: "Ver Tickets",
+    icon: IconFileBarcode,
+    href: "/tickets",
   },
   // {
   //   id: uniqueId(),
@@ -40,13 +41,13 @@ const Menuitems = [
   // },
   {
     navlabel: true,
-    subheader: "Tab2",
+    subheader: "Inventario (Demo)",
   },
   {
     id: uniqueId(),
-    title: "SubTab2",
-    icon: IconLogin,
-    href: "/authentication/login",
+    title: "Inventario",
+    icon: IconBuildingWarehouse,
+    href: "/inventario",
   },
   {
     id: uniqueId(),
@@ -54,28 +55,28 @@ const Menuitems = [
     icon: IconUserPlus,
     href: "/authentication/register",
   },
-  {
-    navlabel: true,
-    subheader: "Tab3",
-  },
+  // {
+  //   navlabel: true,
+  //   subheader: "Tab3",
+  // },
+  // // {
+  // //   id: uniqueId(),
+  // //   title: "Icons",
+  // //   icon: IconMoodHappy,
+  // //   href: "/icons",
+  // // },
   // {
   //   id: uniqueId(),
-  //   title: "Icons",
-  //   icon: IconMoodHappy,
-  //   href: "/icons",
+  //   title: "Sample Page",
+  //   icon: IconAperture,
+  //   href: "/sample-page",
   // },
-  {
-    id: uniqueId(),
-    title: "Sample Page",
-    icon: IconAperture,
-    href: "/sample-page",
-  },
-  {
-    id: uniqueId(),
-    title: "Sample Tamble",
-    icon: IconAperture,
-    href: "/sample-table",
-  },
+  // {
+  //   id: uniqueId(),
+  //   title: "Sample Tamble",
+  //   icon: IconAperture,
+  //   href: "/sample-table",
+  // },
 ];
 
 export default Menuitems;
