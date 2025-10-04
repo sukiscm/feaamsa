@@ -2,13 +2,14 @@
 
 import * as React from 'react';
 import { useMemo, useState } from 'react';
-import { Chip } from '@mui/material';
+import { Button, Chip, Stack } from '@mui/material';
 
 import { MRT_Table, useMaterialReactTable, type MRT_ColumnDef } from 'material-react-table';
 
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { useTickets } from '@/app/hooks/useTickets';
+import CreateTicketDialog from './components/CreateTicketDialog';
 
 // Ajusta a lo que regresa tu API
 type Ticket = {
@@ -25,16 +26,19 @@ type Ticket = {
 
 export default function TicketsPage() {
   // estado de tabla (server-side)
+  const [open, setOpen] = useState(false);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<{id: string; desc: boolean}[]>([]);
-
+  const [refetchKey, setRefetchKey] = useState(0);
   // llama a tu hook pasando page+limit (tu hook ya lo hace)
-  const { data, total, loading } = useTickets({
-    page: pagination.pageIndex + 1, // si tu API es 1-based
-    limit: pagination.pageSize,
-    // sortBy: sorting[0]?.id,         // opcional si tu API acepta ordenar
-    // sortDir: sorting[0]?.desc ? 'DESC' : 'ASC',
-  });
+const { data, total, loading, error } = useTickets({
+  page: pagination.pageIndex + 1,
+  limit: pagination.pageSize,
+  sortBy: sorting[0]?.id,
+  sortDir: sorting[0]?.desc ? "DESC" : "ASC",
+  // status, priority, search si los usas
+  refetchKey,
+});
 
   const rows: Ticket[] = data ?? [];
 
@@ -120,7 +124,17 @@ export default function TicketsPage() {
   return (
     <PageContainer title="Tickets" description="Listado de tickets">
       <DashboardCard title="Tickets">
+        <Stack direction="row" justifyContent="flex-end" mb={2}>
+          <Button variant="contained" onClick={() => setOpen(true)}>Nuevo Ticket</Button>
+        </Stack>
+
+
         <MRT_Table table={table} />
+        <CreateTicketDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          onCreated={() => setRefetchKey(k => k + 1)}
+        />
       </DashboardCard>
     </PageContainer>
   );
