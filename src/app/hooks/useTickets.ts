@@ -66,7 +66,7 @@ export function useTickets(params?: UseTicketsParams) {
     return () => controller.abort();
   }, [qs, params?.refetchKey]);
 
-  return { data, total, loading, error };
+  return { data, total, loading, error, };
 }
 
 /* --------- util opcional: debounce --------- */

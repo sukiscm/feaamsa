@@ -7,6 +7,7 @@ import {
   IconTypography,
   IconUserPlus,
   IconBuildingWarehouse,
+  IconPackage,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -55,6 +56,12 @@ const Menuitems = [
     icon: IconUserPlus,
     href: "/authentication/register",
   },
+  {
+  id: uniqueId(),
+  title: "Solicitudes de Material",
+  icon: IconPackage, // Importar: import { IconPackage } from "@tabler/icons-react";
+  href: "/material-requests",
+},
   // {
   //   navlabel: true,
   //   subheader: "Tab3",
