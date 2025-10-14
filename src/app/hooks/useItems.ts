@@ -10,6 +10,7 @@ export interface Item {
   status: string;
   inventario: number;
   activo: boolean;
+  observaciones?: string; // 👈 NUEVO
   createdAt: string;
   updatedAt: string;
 }

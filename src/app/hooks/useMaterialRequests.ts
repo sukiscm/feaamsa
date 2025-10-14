@@ -15,6 +15,13 @@ export interface MaterialRequestItem {
   notes?: string;
 }
 
+export interface UsedPreset {
+  id: string;
+  name: string;
+  type: string;
+  description?: string;
+}
+
 export interface MaterialRequest {
   id: string;
   folio: string;
@@ -40,6 +47,9 @@ export interface MaterialRequest {
   notes?: string;
   rejectionReason?: string;
   items: MaterialRequestItem[];
+  fromPreset?: UsedPreset;
+  fromPresetId?: string;
+  wasModifiedFromPreset: boolean;
   createdAt: string;
   updatedAt: string;
   approvedAt?: string;

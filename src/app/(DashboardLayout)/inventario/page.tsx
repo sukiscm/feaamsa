@@ -120,61 +120,83 @@ export default function InventarioPage() {
   };
 
   // Columnas
-  const columns = useMemo<MRT_ColumnDef<Item>[]>(() => [
-    { 
-      accessorKey: 'descripcion', 
-      header: 'Descripción', 
-      size: 300,
-      enableColumnFilter: true,
+const columns = useMemo<MRT_ColumnDef<Item>[]>(() => [
+  { 
+    accessorKey: 'descripcion', 
+    header: 'Descripción', 
+    size: 300,
+    enableColumnFilter: true,
+  },
+  { 
+    accessorKey: 'serie', 
+    header: 'Serie', 
+    size: 100,
+    Cell: ({ cell }) => <>{cell.getValue() || 'S/N'}</>,
+  },
+  { 
+    accessorKey: 'categoria', 
+    header: 'Categoría', 
+    size: 140,
+    filterVariant: 'select',
+  },
+  { 
+    accessorKey: 'proceso', 
+    header: 'Proceso', 
+    size: 140,
+  },
+  {
+    accessorKey: 'status',
+    header: 'Estado',
+    size: 140,
+    Cell: ({ row }) => statusChip(row.original.status, row.original.activo),
+  },
+  {
+    accessorKey: 'inventario',
+    header: 'Stock',
+    size: 140,
+    Cell: ({ cell }) => stockChip(cell.getValue<number>()),
+    sortingFn: 'basic',
+    filterVariant: 'range',
+  },
+  // 👇 NUEVO - Observaciones (opcional en tabla)
+  {
+    accessorKey: 'observaciones',
+    header: 'Observaciones',
+    size: 200,
+    Cell: ({ cell }) => {
+      const obs = cell.getValue<string>();
+      if (!obs) return '—';
+      return (
+        <Box 
+          sx={{ 
+            maxWidth: 200, 
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}
+          title={obs}
+        >
+          {obs}
+        </Box>
+      );
     },
-    { 
-      accessorKey: 'serie', 
-      header: 'Serie', 
-      size: 100,
-      Cell: ({ cell }) => <>{cell.getValue() || 'S/N'}</>,
+  },
+  {
+    accessorKey: 'updatedAt',
+    header: 'Última actualización',
+    size: 180,
+    Cell: ({ cell }) => {
+      const date = new Date(cell.getValue<string>());
+      return date.toLocaleDateString('es-MX', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     },
-    { 
-      accessorKey: 'categoria', 
-      header: 'Categoría', 
-      size: 140,
-      filterVariant: 'select',
-    },
-    { 
-      accessorKey: 'proceso', 
-      header: 'Proceso', 
-      size: 140,
-    },
-    {
-      accessorKey: 'status',
-      header: 'Estado',
-      size: 140,
-      Cell: ({ row }) => statusChip(row.original.status, row.original.activo),
-    },
-    {
-      accessorKey: 'inventario',
-      header: 'Stock',
-      size: 140,
-      Cell: ({ cell }) => stockChip(cell.getValue<number>()),
-      sortingFn: 'basic',
-      filterVariant: 'range',
-    },
-    {
-      accessorKey: 'updatedAt',
-      header: 'Última actualización',
-      size: 180,
-      Cell: ({ cell }) => {
-        const date = new Date(cell.getValue<string>());
-        return date.toLocaleDateString('es-MX', { 
-          year: 'numeric', 
-          month: 'short', 
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-      },
-    },
-  ], []);
-
+  },
+], []);
   if (error) {
     return (
       <PageContainer title="Inventario" description="Control de inventario del almacén">

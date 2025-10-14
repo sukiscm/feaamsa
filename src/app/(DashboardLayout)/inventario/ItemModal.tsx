@@ -68,9 +68,9 @@ export default function ItemModal({ open, onClose, onSave, item, mode }: ItemMod
     status: 'EN OPERACIÓN',
     inventario: 0,
     activo: true,
+    observaciones: '', // 👈 NUEVO
   });
 
-  // Cargar datos del item si estamos editando
   useEffect(() => {
     if (item && mode === 'edit') {
       setFormData({
@@ -81,9 +81,9 @@ export default function ItemModal({ open, onClose, onSave, item, mode }: ItemMod
         status: item.status || 'EN OPERACIÓN',
         inventario: item.inventario || 0,
         activo: item.activo ?? true,
+        observaciones: item.observaciones || '', // 👈 NUEVO
       });
     } else if (mode === 'create') {
-      // Reset form para crear nuevo
       setFormData({
         descripcion: '',
         serie: 'S/N',
@@ -92,6 +92,7 @@ export default function ItemModal({ open, onClose, onSave, item, mode }: ItemMod
         status: 'EN OPERACIÓN',
         inventario: 0,
         activo: true,
+        observaciones: '', // 👈 NUEVO
       });
     }
     setError(null);
@@ -105,7 +106,6 @@ export default function ItemModal({ open, onClose, onSave, item, mode }: ItemMod
     e.preventDefault();
     setError(null);
 
-    // Validaciones
     if (!formData.descripcion.trim()) {
       setError('La descripción es obligatoria');
       return;
@@ -169,7 +169,7 @@ export default function ItemModal({ open, onClose, onSave, item, mode }: ItemMod
             </Typography>
           </Grid>
 
-          {/* Descripción - Ancho completo */}
+          {/* Descripción */}
           <Grid size={{ xs: 12 }}>
             <TextField
               label="Descripción del Item"
@@ -183,7 +183,7 @@ export default function ItemModal({ open, onClose, onSave, item, mode }: ItemMod
             />
           </Grid>
 
-          {/* Serie y Categoría en fila */}
+          {/* Serie y Categoría */}
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               label="Serie / Número de Parte"
@@ -274,6 +274,21 @@ export default function ItemModal({ open, onClose, onSave, item, mode }: ItemMod
                 </MenuItem>
               ))}
             </TextField>
+          </Grid>
+
+          {/* 👇 NUEVO CAMPO - Observaciones */}
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              label="Observaciones"
+              fullWidth
+              multiline
+              rows={3}
+              value={formData.observaciones}
+              onChange={(e) => handleChange('observaciones', e.target.value)}
+              placeholder="Notas adicionales sobre el item (opcional)"
+              disabled={loading}
+              helperText="Información adicional, condiciones especiales, etc."
+            />
           </Grid>
 
           {/* Divider */}

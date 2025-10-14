@@ -8,6 +8,8 @@ import {
   IconUserPlus,
   IconBuildingWarehouse,
   IconPackage,
+  IconTemplate,
+  IconChartBar,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -17,12 +19,27 @@ const Menuitems = [
     navlabel: true,
     subheader: "HOME",
   },
-
+{
+    navlabel: true,
+    subheader: "Administración",
+  },
+  {
+    id: uniqueId(),
+    title: "Plantillas",
+    icon: IconTemplate, // Importar: import { IconTemplate } from "@tabler/icons-react";
+    href: "/admin/presets",
+  },
   {
     id: uniqueId(),
     title: "Dashboard",
     icon: IconLayoutDashboard,
     href: "/",
+  },
+  {
+    id: uniqueId(),
+    title: "Estadísticas", // 👈 NUEVO
+    icon: IconChartBar,
+    href: "/admin/presets/stats",
   },
   {
     navlabel: true,

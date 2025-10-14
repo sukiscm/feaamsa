@@ -14,8 +14,9 @@ import {
   Alert,
   CircularProgress,
   Paper,
+  Stack,
 } from '@mui/material';
-import { IconArrowLeft } from '@tabler/icons-react';
+import { IconArrowLeft, IconTemplate } from '@tabler/icons-react';
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 
@@ -266,6 +267,34 @@ export default function MaterialRequestDetailPage() {
             </CardContent>
           </Card>
 
+{request.fromPreset && (
+  <Grid size={12}>
+    <Card sx={{ bgcolor: 'primary.lighter' }}>
+      <CardContent>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <IconTemplate size={24} />
+          <Box>
+            <Typography variant="subtitle1" fontWeight={600}>
+              Creado desde preset: {request.fromPreset.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {request.fromPreset.description}
+            </Typography>
+            {request.wasModifiedFromPreset && (
+              <Chip
+                label="Modificado por el usuario"
+                size="small"
+                color="warning"
+                sx={{ mt: 1 }}
+              />
+            )}
+          </Box>
+        </Stack>
+      </CardContent>
+    </Card>
+  </Grid>
+)}
+
           {isPending && (
             <Card sx={{ mt: 2 }}>
               <CardContent>
@@ -293,6 +322,7 @@ export default function MaterialRequestDetailPage() {
               </CardContent>
             </Card>
           )}
+          
         </Grid>
       </Grid>
 
