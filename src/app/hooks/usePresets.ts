@@ -1,6 +1,13 @@
 // src/app/hooks/usePresets.ts
 import { useEffect, useState } from "react";
 
+export enum PresetType {
+  MANTENIMIENTO_GENERAL = 'MANTENIMIENTO_GENERAL',
+  INSTALACION_MINISPLIT = 'INSTALACION_MINISPLIT',
+  REPARACION_URGENTE = 'REPARACION_URGENTE',
+  LIMPIEZA_PREVENTIVA = 'LIMPIEZA_PREVENTIVA',
+}
+
 export interface PresetItem {
   itemId: string;
   quantity: number;
@@ -31,14 +38,20 @@ export interface PresetWithDetails extends Preset {
   }>;
 }
 
-export function usePresets() {
+// 👇 AGREGAR PARÁMETRO OPCIONAL
+export function usePresets(includeInactive = true) { // 👈 Por defecto trae todos
   const [data, setData] = useState<Preset[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
-    fetch('/api/material-requests/presets')
+    // 👇 AGREGAR QUERY PARAM
+    const url = includeInactive 
+      ? '/api/material-requests/presets?includeInactive=true'
+      : '/api/material-requests/presets';
+
+    fetch(url)
       .then((r) => {
         if (!r.ok) throw new Error("Error al cargar presets");
         return r.json();
@@ -46,11 +59,15 @@ export function usePresets() {
       .then(setData)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [includeInactive]);
 
   const refetch = () => {
     setLoading(true);
-    fetch('/api/material-requests/presets')
+    const url = includeInactive 
+      ? '/api/material-requests/presets?includeInactive=true'
+      : '/api/material-requests/presets';
+
+    fetch(url)
       .then((r) => r.json())
       .then(setData)
       .catch((err) => setError(err.message))

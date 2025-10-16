@@ -9,19 +9,63 @@ import {
   IconButton,
   Tooltip,
   Alert,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import { MaterialReactTable, type MRT_ColumnDef } from 'material-react-table';
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
-import { IconEdit, IconTrash, IconPlus, IconEye } from '@tabler/icons-react';
+import { IconEdit, IconEye, IconPlus, IconToggleLeft, IconToggleRight } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { usePresets, type Preset } from '@/app/hooks/usePresets';
 
+type TabValue = 'active' | 'inactive' | 'all';
+
 export default function PresetsAdminPage() {
   const router = useRouter();
-  const { data, loading, error, refetch } = usePresets();
+  const { data: allData, loading, error, refetch } = usePresets();
+
+  const [activeTab, setActiveTab] = useState<TabValue>('active');
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  // Filtrar según el tab activo
+  const data = React.useMemo(() => {
+    if (activeTab === 'all') return allData;
+    if (activeTab === 'active') return allData.filter(p => p.active);
+    if (activeTab === 'inactive') return allData.filter(p => !p.active);
+    return allData;
+  }, [allData, activeTab]);
+
+  const handleToggleActive = async (preset: Preset) => {
+    const newStatus = !preset.active;
+    const action = newStatus ? 'activar' : 'desactivar';
+
+    if (!confirm(`¿Estás seguro de ${action} el preset "${preset.name}"?`)) {
+      return;
+    }
+
+    setActionLoading(preset.id);
+
+    try {
+      const response = await fetch(`/api/material-requests/presets/${preset.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ active: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error al ${action} preset`);
+      }
+
+      await refetch();
+    } catch (err: any) {
+      alert('Error: ' + err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const columns = React.useMemo<MRT_ColumnDef<Preset>[]>(
     () => [
@@ -101,6 +145,24 @@ export default function PresetsAdminPage() {
           </Alert>
         </Box>
 
+        {/* Tabs */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+          <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
+            <Tab 
+              label={`Activos (${allData.filter(p => p.active).length})`} 
+              value="active" 
+            />
+            <Tab 
+              label={`Inactivos (${allData.filter(p => !p.active).length})`} 
+              value="inactive" 
+            />
+            <Tab 
+              label={`Todos (${allData.length})`} 
+              value="all" 
+            />
+          </Tabs>
+        </Box>
+
         <MaterialReactTable
           columns={columns}
           data={data}
@@ -119,6 +181,7 @@ export default function PresetsAdminPage() {
                   <IconEye size={18} />
                 </IconButton>
               </Tooltip>
+              
               <Tooltip title="Editar">
                 <IconButton
                   size="small"
@@ -127,16 +190,19 @@ export default function PresetsAdminPage() {
                   <IconEdit size={18} />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Eliminar">
+
+              <Tooltip title={row.original.active ? 'Desactivar' : 'Activar'}>
                 <IconButton
                   size="small"
-                  color="error"
-                  onClick={() => {
-                    // Implementar lógica de eliminación
-                    alert('Eliminar preset');
-                  }}
+                  color={row.original.active ? 'warning' : 'success'}
+                  onClick={() => handleToggleActive(row.original)}
+                  disabled={actionLoading === row.original.id}
                 >
-                  <IconTrash size={18} />
+                  {row.original.active ? (
+                    <IconToggleLeft size={18} />
+                  ) : (
+                    <IconToggleRight size={18} />
+                  )}
                 </IconButton>
               </Tooltip>
             </Box>
@@ -152,11 +218,11 @@ export default function PresetsAdminPage() {
             </Button>
           )}
 
-            initialState={{
+          initialState={{
             density: 'compact',
             pagination: { 
               pageSize: 10, 
-              pageIndex: 0  // 👈 AGREGADO
+              pageIndex: 0,
             },
           }}
 

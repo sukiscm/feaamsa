@@ -1,15 +1,19 @@
+// src/app/(DashboardLayout)/layout/sidebar/MenuItems.tsx
 import {
   IconAperture,
   IconCopy,
   IconLayoutDashboard,
   IconLogin,
-  IconFileBarcode,
+  IconMoodHappy,
   IconTypography,
   IconUserPlus,
-  IconBuildingWarehouse,
+  IconTicket,
+  IconBox,
+  IconMapPin,
   IconPackage,
-  IconTemplate,
-  IconChartBar,
+  IconClipboardList,
+  IconTemplate,      // 👈 NUEVO
+  IconChartBar,      // 👈 NUEVO
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -17,17 +21,7 @@ import { uniqueId } from "lodash";
 const Menuitems = [
   {
     navlabel: true,
-    subheader: "HOME",
-  },
-{
-    navlabel: true,
-    subheader: "Administración",
-  },
-  {
-    id: uniqueId(),
-    title: "Plantillas",
-    icon: IconTemplate, // Importar: import { IconTemplate } from "@tabler/icons-react";
-    href: "/admin/presets",
+    subheader: "Inicio",
   },
   {
     id: uniqueId(),
@@ -36,73 +30,59 @@ const Menuitems = [
     href: "/",
   },
   {
+    navlabel: true,
+    subheader: "Operaciones",
+  },
+  {
     id: uniqueId(),
-    title: "Estadísticas", // 👈 NUEVO
+    title: "Tickets",
+    icon: IconTicket,
+    href: "/tickets",
+  },
+  {
+    id: uniqueId(),
+    title: "Requisiciones",
+    icon: IconClipboardList,
+    href: "/material-requests",
+  },
+  {
+    navlabel: true,
+    subheader: "Inventario",
+  },
+  {
+    id: uniqueId(),
+    title: "Items",
+    icon: IconBox,
+    href: "/catalog/items",
+  },
+  {
+    id: uniqueId(),
+    title: "Ubicaciones",
+    icon: IconMapPin,
+    href: "/catalog/locations",
+  },
+  {
+    id: uniqueId(),
+    title: "Movimientos",
+    icon: IconPackage,
+    href: "/inventory/movements",
+  },
+  {
+    navlabel: true,
+    subheader: "Administración",  // 👈 NUEVA SECCIÓN
+  },
+  {
+    id: uniqueId(),
+    title: "Plantillas",           // 👈 NUEVO
+    icon: IconTemplate,
+    href: "/admin/presets",
+  },
+  {
+    id: uniqueId(),
+    title: "Estadísticas",         // 👈 NUEVO
     icon: IconChartBar,
     href: "/admin/presets/stats",
   },
-  {
-    navlabel: true,
-    subheader: "Tickets",
-  },
-  {
-    id: uniqueId(),
-    title: "Ver Tickets",
-    icon: IconFileBarcode,
-    href: "/tickets",
-  },
-  // {
-  //   id: uniqueId(),
-  //   title: "Shadow",
-  //   icon: IconCopy,
-  //   href: "/utilities/shadow",
-  // },
-  {
-    navlabel: true,
-    subheader: "Inventario (Demo)",
-  },
-  {
-    id: uniqueId(),
-    title: "Inventario",
-    icon: IconBuildingWarehouse,
-    href: "/inventario",
-  },
-  {
-    id: uniqueId(),
-    title: "Register",
-    icon: IconUserPlus,
-    href: "/authentication/register",
-  },
-  {
-  id: uniqueId(),
-  title: "Solicitudes de Material",
-  icon: IconPackage, // Importar: import { IconPackage } from "@tabler/icons-react";
-  href: "/material-requests",
-},
-  // {
-  //   navlabel: true,
-  //   subheader: "Tab3",
-  // },
-  // // {
-  // //   id: uniqueId(),
-  // //   title: "Icons",
-  // //   icon: IconMoodHappy,
-  // //   href: "/icons",
-  // // },
-  // {
-  //   id: uniqueId(),
-  //   title: "Sample Page",
-  //   icon: IconAperture,
-  //   href: "/sample-page",
-  // },
-  // {
-  //   id: uniqueId(),
-  //   title: "Sample Tamble",
-  //   icon: IconAperture,
-  //   href: "/sample-table",
-  // },
 ];
 
 export default Menuitems;
-
-

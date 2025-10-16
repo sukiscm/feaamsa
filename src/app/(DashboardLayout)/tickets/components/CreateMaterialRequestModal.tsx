@@ -53,7 +53,7 @@ export default function CreateMaterialRequestModal({
   onSuccess,
 }: CreateMaterialRequestModalProps) {
   const { data: items, loading: loadingItems } = useItems();
-  const { data: presets, loading: loadingPresets } = usePresets();
+  const { data: presets, loading: loadingPresets } = usePresets(false);
 
   const [requestItems, setRequestItems] = useState<MaterialRequestItemForm[]>([
     { item: null, quantityRequested: 1 },
