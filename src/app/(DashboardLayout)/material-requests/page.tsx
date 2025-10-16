@@ -1,3 +1,4 @@
+// src/app/(DashboardLayout)/material-requests/page.tsx
 'use client';
 
 import React, { useMemo, useState } from 'react';
@@ -10,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { useMaterialRequests, type MaterialRequest } from '@/app/hooks/useMaterialRequests';
+import PDFIconButton from './components/PDFIconButton';
 
 type TabValue = 'all' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 
@@ -30,6 +32,7 @@ export default function MaterialRequestsPage() {
       REJECTED: 'error',
       DELIVERED: 'info',
       CANCELLED: 'default',
+      PARTIAL: 'primary',
     };
     return colors[status] || 'default';
   };
@@ -128,12 +131,16 @@ export default function MaterialRequestsPage() {
           displayColumnDefOptions={{
             'mrt-row-actions': {
               header: 'Acciones',
-              size: 120,
+              size: 150,
             },
           }}
 
           renderRowActions={({ row }) => (
             <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+              {/* PDF Button */}
+              <PDFIconButton request={row.original} />
+              
+              {/* Ver detalle */}
               <Tooltip title="Ver detalle">
                 <IconButton
                   size="small"
@@ -143,6 +150,7 @@ export default function MaterialRequestsPage() {
                 </IconButton>
               </Tooltip>
               
+              {/* Acciones para pendientes */}
               {row.original.status === 'PENDING' && (
                 <>
                   <Tooltip title="Aprobar">

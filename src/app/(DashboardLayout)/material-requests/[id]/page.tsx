@@ -24,6 +24,8 @@ import { type MaterialRequest } from '@/app/hooks/useMaterialRequests';
 import ApproveModal from '../components/ApproveModal';
 import RejectModal from '../components/RejectModal';
 
+import PDFDownloadButton from '../components/PDFDownloadButton';
+
 export default function MaterialRequestDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -231,6 +233,9 @@ export default function MaterialRequestDetailPage() {
 
         {/* Panel lateral */}
         <Grid size={{ xs: 12, md: 4 }}>
+
+
+          
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -266,6 +271,24 @@ export default function MaterialRequestDetailPage() {
               )}
             </CardContent>
           </Card>
+
+<Card sx={{ mt: 2 }}>
+  <CardContent>
+    <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      📄 Documentos
+    </Typography>
+    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      Genera el PDF oficial de esta requisición
+    </Typography>
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <PDFDownloadButton 
+        request={request} 
+        variant="contained"
+        size="small"
+      />
+    </Box>
+  </CardContent>
+</Card>
 
 {request.fromPreset && (
   <Grid size={12}>
