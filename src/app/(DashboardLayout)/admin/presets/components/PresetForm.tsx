@@ -27,8 +27,8 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Grid,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 import { IconTrash, IconPlus } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useItems, type Item } from '@/app/hooks/useItems';
