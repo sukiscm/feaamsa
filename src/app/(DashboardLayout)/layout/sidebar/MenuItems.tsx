@@ -53,7 +53,7 @@ const Menuitems = [
     id: uniqueId(),
     title: "Items",
     icon: IconBox,
-    href: "/catalog/items",
+    href: "/inventario",
   },
   {
     id: uniqueId(),
