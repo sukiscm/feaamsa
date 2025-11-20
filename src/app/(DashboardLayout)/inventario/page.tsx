@@ -1,13 +1,14 @@
+// src/app/(DashboardLayout)/inventario/page.tsx
 'use client';
 
 import React, { useMemo, useState } from 'react';
 import { Box, Button, Chip, Alert, CircularProgress, IconButton, Tooltip } from '@mui/material';
-import { MaterialReactTable, type MRT_ColumnDef, type MRT_Row } from 'material-react-table';
+import { MaterialReactTable, type MRT_ColumnDef } from 'material-react-table';
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
 import PageContainer from '../components/container/PageContainer';
 import DashboardCard from '../components/shared/DashboardCard';
 import { useItems, type Item } from '@/app/hooks/useItems';
-import { IconPlus, IconRefresh, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconPlus, IconRefresh, IconEdit, IconTrash, IconFileSpreadsheet } from '@tabler/icons-react';
 import ItemModal from './ItemModal';
 
 // Chip de estado
@@ -27,6 +28,57 @@ const stockChip = (cantidad: number) => {
     cantidad > 0 ? 'error' : 'default';
   
   return <Chip label={`${label} (${cantidad})`} color={color} size="small" />;
+};
+
+// 📊 Función para exportar a Excel/CSV
+const exportToExcel = (data: Item[]) => {
+  // Preparar los datos para exportación
+  const exportData = data.map(item => ({
+    'Descripción': item.descripcion,
+    'Serie': item.serie || 'S/N',
+    'Categoría': item.categoria || '',
+    'Proceso': item.proceso || '',
+    'Estado': item.activo ? item.status : 'Inactivo',
+    'Stock': item.inventario,
+    'Observaciones': item.observaciones || '',
+    'Última Actualización': new Date(item.updatedAt).toLocaleDateString('es-MX', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }));
+
+  // Convertir a CSV
+  const headers = Object.keys(exportData[0]);
+  const csvContent = [
+    headers.join(','),
+    ...exportData.map(row => 
+      headers.map(header => {
+        const value = row[header as keyof typeof row];
+        // Escapar comillas y envolver en comillas si contiene comas
+        const stringValue = String(value);
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+        return stringValue;
+      }).join(',')
+    )
+  ].join('\n');
+
+  // Crear blob y descargar
+  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', `inventario_${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 export default function InventarioPage() {
@@ -120,83 +172,83 @@ export default function InventarioPage() {
   };
 
   // Columnas
-const columns = useMemo<MRT_ColumnDef<Item>[]>(() => [
-  { 
-    accessorKey: 'descripcion', 
-    header: 'Descripción', 
-    size: 300,
-    enableColumnFilter: true,
-  },
-  { 
-    accessorKey: 'serie', 
-    header: 'Serie', 
-    size: 100,
-    Cell: ({ cell }) => <>{cell.getValue() || 'S/N'}</>,
-  },
-  { 
-    accessorKey: 'categoria', 
-    header: 'Categoría', 
-    size: 140,
-    filterVariant: 'select',
-  },
-  { 
-    accessorKey: 'proceso', 
-    header: 'Proceso', 
-    size: 140,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Estado',
-    size: 140,
-    Cell: ({ row }) => statusChip(row.original.status, row.original.activo),
-  },
-  {
-    accessorKey: 'inventario',
-    header: 'Stock',
-    size: 140,
-    Cell: ({ cell }) => stockChip(cell.getValue<number>()),
-    sortingFn: 'basic',
-    filterVariant: 'range',
-  },
-  // 👇 NUEVO - Observaciones (opcional en tabla)
-  {
-    accessorKey: 'observaciones',
-    header: 'Observaciones',
-    size: 200,
-    Cell: ({ cell }) => {
-      const obs = cell.getValue<string>();
-      if (!obs) return '—';
-      return (
-        <Box 
-          sx={{ 
-            maxWidth: 200, 
-            overflow: 'hidden', 
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
-          }}
-          title={obs}
-        >
-          {obs}
-        </Box>
-      );
+  const columns = useMemo<MRT_ColumnDef<Item>[]>(() => [
+    { 
+      accessorKey: 'descripcion', 
+      header: 'Descripción', 
+      size: 300,
+      enableColumnFilter: true,
     },
-  },
-  {
-    accessorKey: 'updatedAt',
-    header: 'Última actualización',
-    size: 180,
-    Cell: ({ cell }) => {
-      const date = new Date(cell.getValue<string>());
-      return date.toLocaleDateString('es-MX', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+    { 
+      accessorKey: 'serie', 
+      header: 'Serie', 
+      size: 100,
+      Cell: ({ cell }) => <>{cell.getValue() || 'S/N'}</>,
     },
-  },
-], []);
+    { 
+      accessorKey: 'categoria', 
+      header: 'Categoría', 
+      size: 140,
+      filterVariant: 'select',
+    },
+    { 
+      accessorKey: 'proceso', 
+      header: 'Proceso', 
+      size: 140,
+    },
+    {
+      accessorKey: 'status',
+      header: 'Estado',
+      size: 140,
+      Cell: ({ row }) => statusChip(row.original.status, row.original.activo),
+    },
+    {
+      accessorKey: 'inventario',
+      header: 'Stock',
+      size: 140,
+      Cell: ({ cell }) => stockChip(cell.getValue<number>()),
+      sortingFn: 'basic',
+      filterVariant: 'range',
+    },
+    {
+      accessorKey: 'observaciones',
+      header: 'Observaciones',
+      size: 200,
+      Cell: ({ cell }) => {
+        const obs = cell.getValue<string>();
+        if (!obs) return '—';
+        return (
+          <Box 
+            sx={{ 
+              maxWidth: 200, 
+              overflow: 'hidden', 
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}
+            title={obs}
+          >
+            {obs}
+          </Box>
+        );
+      },
+    },
+    {
+      accessorKey: 'updatedAt',
+      header: 'Última actualización',
+      size: 180,
+      Cell: ({ cell }) => {
+        const date = new Date(cell.getValue<string>());
+        return date.toLocaleDateString('es-MX', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      },
+    },
+  ], []);
+
   if (error) {
     return (
       <PageContainer title="Inventario" description="Control de inventario del almacén">
@@ -245,6 +297,10 @@ const columns = useMemo<MRT_ColumnDef<Item>[]>(() => [
               positionGlobalFilter="left"
               positionActionsColumn="last"
               
+              muiTableContainerProps={{
+                sx: { maxHeight: '60vh' }
+              }}
+              
               initialState={{
                 density: 'compact',
                 pagination: { pageSize: 10, pageIndex: 0 },
@@ -275,8 +331,8 @@ const columns = useMemo<MRT_ColumnDef<Item>[]>(() => [
                 </Box>
               )}
 
-              // Toolbar superior
-              renderTopToolbarCustomActions={({ table }) => (
+              // 📊 Toolbar superior con botón de exportar a Excel
+              renderTopToolbarCustomActions={() => (
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <Button 
                     variant="contained" 
@@ -290,19 +346,19 @@ const columns = useMemo<MRT_ColumnDef<Item>[]>(() => [
                     variant="outlined" 
                     size="small"
                     startIcon={<IconRefresh size={18} />}
-                    onClick={() => window.location.reload()}
+                    onClick={() => refetch()}
                   >
                     Actualizar
                   </Button>
-                  {table.getState().columnFilters.length > 0 && (
-                    <Button 
-                      variant="outlined" 
-                      size="small" 
-                      onClick={() => table.resetColumnFilters()}
-                    >
-                      Limpiar filtros
-                    </Button>
-                  )}
+                  <Button 
+                    variant="outlined" 
+                    size="small"
+                    color="success"
+                    startIcon={<IconFileSpreadsheet size={18} />}
+                    onClick={() => exportToExcel(items)}
+                  >
+                    Exportar a Excel
+                  </Button>
                 </Box>
               )}
 
@@ -320,16 +376,6 @@ const columns = useMemo<MRT_ColumnDef<Item>[]>(() => [
                 variant: 'outlined',
               }}
 
-              // Contenedor
-              muiTableContainerProps={{
-                sx: {
-                  maxHeight: '60vh',
-                  '& .MuiTableRow-root:nth-of-type(even)': {
-                    backgroundColor: (t) => t.palette.action.hover,
-                  },
-                },
-              }}
-
               muiTablePaperProps={{
                 sx: {
                   borderRadius: 3,
@@ -338,12 +384,12 @@ const columns = useMemo<MRT_ColumnDef<Item>[]>(() => [
                 },
               }}
 
-              // Head / Body
               muiTableHeadCellProps={{
                 sx: {
                   fontWeight: 700,
                   backgroundColor: (t) =>
-                    t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.background.paper,
+                    t.palette.mode === 'light' ?
+                    t.palette.grey[50] : t.palette.background.paper,
                 },
               }}
 
@@ -354,7 +400,6 @@ const columns = useMemo<MRT_ColumnDef<Item>[]>(() => [
                 },
               }}
 
-              // Paginación
               muiPaginationProps={{
                 rowsPerPageOptions: [5, 10, 20, 50],
                 shape: 'rounded',
