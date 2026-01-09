@@ -68,6 +68,12 @@ const Menuitems = [
     href: "/inventory/movements",
   },
   {
+  id: 'stock-location',
+  title: 'Stock por Ubicación',
+  icon: IconPackage,
+  href: '/inventario/stock-location',  // 👈 Con "inventario" en español
+},
+  {
     navlabel: true,
     subheader: "Administración",  // 👈 NUEVA SECCIÓN
   },
