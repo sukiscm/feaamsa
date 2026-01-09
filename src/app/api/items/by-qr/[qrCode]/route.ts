@@ -1,11 +1,11 @@
-// src/app/api/inventory/[itemId]/movements/route.ts
+// src/app/api/items/by-qr/[qrCode]/route.ts
 import { authOptions } from "@/auth";
 import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ itemId: string }> } // 👈 Promise
+  { params }: { params: Promise<{ qrCode: string }> } // 👈 Promise
 ) {
   const session = await getServerSession(authOptions);
   const access = (session as any)?.access_token;
@@ -18,10 +18,10 @@ export async function GET(
   }
 
   try {
-    const { itemId } = await params; // 👈 await params
+    const { qrCode } = await params; // 👈 await params
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_URL}/inventory/${itemId}/movements`,
+      `${process.env.NEXT_PUBLIC_BACK_URL}/items/by-qr/${qrCode}`,
       {
         headers: { Authorization: `Bearer ${access}` },
         cache: "no-store",
@@ -35,7 +35,7 @@ export async function GET(
     });
   } catch (error: any) {
     return new Response(
-      JSON.stringify({ message: error.message || "Error al cargar movimientos" }), 
+      JSON.stringify({ message: error.message || "Error al buscar item" }), 
       { 
         status: 500,
         headers: { 'Content-Type': 'application/json' }
