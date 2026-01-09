@@ -42,10 +42,12 @@ import {
   IconPackage,
   IconAlertCircle,
   IconCircleCheck,
+  IconArrowsExchange,
 } from '@tabler/icons-react';
 
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
+import TransferModal from './components/TransferModal';
 
 // ============================================
 // TIPOS
@@ -113,9 +115,10 @@ interface StockRowProps {
   ) => void;
   onHistory: (itemId: string, itemName: string) => void;
   onAddLocation: (itemId: string, itemName: string, existingLocationIds: string[]) => void;
+  onTransfer: (itemId: string, itemName: string, locations: any[]) => void;
 }
 
-function StockRow({ row, isExpanded, onToggle, onMovement, onHistory, onAddLocation }: StockRowProps) {
+function StockRow({ row, isExpanded, onToggle, onMovement, onHistory, onAddLocation, onTransfer }: StockRowProps) {
   const getStockColor = (stock: number) => {
     if (stock === 0) return 'error';
     if (stock < 10) return 'warning';
@@ -272,7 +275,7 @@ function StockRow({ row, isExpanded, onToggle, onMovement, onHistory, onAddLocat
               )}
 
               {/* Botón para agregar a nueva ubicación */}
-              <Box sx={{ mt: 2 }}>
+              <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                 <Button
                   variant="outlined"
                   color="primary"
@@ -285,6 +288,19 @@ function StockRow({ row, isExpanded, onToggle, onMovement, onHistory, onAddLocat
                 >
                   Agregar a Nueva Ubicación
                 </Button>
+
+                {/* Botón de transferencia */}
+                {row.locations.length >= 2 && (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    size="small"
+                    startIcon={<IconArrowsExchange size={16} />}
+                    onClick={() => onTransfer(row.item.id, row.item.descripcion, row.locations)}
+                  >
+                    Transferir Stock
+                  </Button>
+                )}
               </Box>
             </Box>
           </Collapse>
@@ -351,6 +367,14 @@ export default function StockLocationPage() {
     cantidad: '',
     comentario: '',
   });
+
+  // Estado para transferencia
+  const [transferDialog, setTransferDialog] = useState<{
+    open: boolean;
+    itemId?: string;
+    itemName?: string;
+    locations?: Array<{ location: Location; stock: number }>;
+  }>({ open: false });
 
   // ============================================
   // EFECTOS
@@ -622,6 +646,31 @@ export default function StockLocationPage() {
   };
 
   // ============================================
+  // FUNCIONES DE TRANSFERENCIA
+  // ============================================
+
+  const handleOpenTransfer = (
+    itemId: string,
+    itemName: string,
+    itemLocations: Array<{ location: Location; stock: number }>
+  ) => {
+    setTransferDialog({
+      open: true,
+      itemId,
+      itemName,
+      locations: itemLocations,
+    });
+  };
+
+  const handleCloseTransfer = () => {
+    setTransferDialog({ open: false });
+  };
+
+  const handleTransferSuccess = () => {
+    loadData();
+  };
+
+  // ============================================
   // FUNCIONES DE UI
   // ============================================
 
@@ -832,6 +881,7 @@ export default function StockLocationPage() {
                   onMovement={handleOpenMovement}
                   onHistory={handleOpenHistory}
                   onAddLocation={handleOpenAddLocation}
+                  onTransfer={handleOpenTransfer}
                 />
               ))}
 
@@ -1032,6 +1082,17 @@ export default function StockLocationPage() {
             </Button>
           </DialogActions>
         </Dialog>
+
+        {/* MODAL DE TRANSFERENCIA */}
+        <TransferModal
+          open={transferDialog.open}
+          onClose={handleCloseTransfer}
+          itemId={transferDialog.itemId || ''}
+          itemName={transferDialog.itemName || ''}
+          locations={transferDialog.locations || []}
+          allLocations={locations}
+          onSuccess={handleTransferSuccess}
+        />
       </DashboardCard>
     </PageContainer>
   );
